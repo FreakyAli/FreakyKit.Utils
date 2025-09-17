@@ -17,7 +17,7 @@
 		<PackageProjectUrl>https://github.com/FreakyAli/FreakyKit.Utils</PackageProjectUrl>
 		<PackageTags>extensions helpers utility</PackageTags>
 		<PackageReleaseNotes>A utility project with extensions and other helper methods</PackageReleaseNotes>
-		<PackageReadmeFile>Readme.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Copyright>Copyright 2025</Copyright>
 		<PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
