@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+		<AssemblyFileVersion>0.0.1</AssemblyFileVersion>
+		<Version>0.0.1</Version>
+		<NeutralLanguage>en</NeutralLanguage>
+		<PackageId>FreakyKit.Utils</PackageId>
+		<LangVersion>latest</LangVersion>
+		<Authors>FreakyAli</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>A utility project with extensions of other helper methods</Description>
+		<PackageIcon>auth_icon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/FreakyAli/FreakyKit.Utils</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/FreakyAli/FreakyKit.Utils</PackageProjectUrl>
+		<PackageTags>extensions helpers utility</PackageTags>
+		<PackageReleaseNotes>A utility project with extensions and other helper methods</PackageReleaseNotes>
+		<PackageReadmeFile>Readme.md</PackageReadmeFile>
+		<Copyright>Copyright 2025</Copyright>
+		<PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+</Project>
