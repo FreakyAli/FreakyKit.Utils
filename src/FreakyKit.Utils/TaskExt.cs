@@ -3,7 +3,21 @@ namespace FreakyKit.Utils;
 public static class TaskExt
 {
     /// <summary>
-    /// A verison of WhenAll that throws all the exceptions encountered!
+    /// Runs the Task in a concurrent thread without waiting for it to complete. This will start the task if it is not already running.
+    /// </summary>
+    /// <param name="task">The task to run.</param>
+    /// <remarks>This is usually used to avoid warning messages about not waiting for the task to complete.</remarks>
+    public static void RunConcurrently(this Task task)
+    {
+        if (task is null)
+            throw new ArgumentNullException(nameof(task), "task is null.");
+
+        if (task.Status == TaskStatus.Created)
+            task.Start();
+    }
+    
+    /// <summary>
+    /// A version of WhenAll that throws all the exceptions encountered!
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="tasks"></param>
