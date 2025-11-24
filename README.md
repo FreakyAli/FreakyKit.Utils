@@ -1,5 +1,13 @@
 # FreakyKit.Utils
 
+<div>
+   <a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/v/FreakyKit.Utils?color=blue&logo=nuget"></a>
+   <a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/dt/FreakyKit.Utils.svg"></a>
+   <a href="./LICENSE"><img src="https://img.shields.io/github/license/freakyali/FreakyKit.Utils"></a>
+   <a href="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils"><img src="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils/badge"></a>
+   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils.svg?type=shield"/></a>
+</div>
+
 A robust and lightweight collection of C# extension methods designed to simplify common programming patterns and utility operations in .NET projects. This library includes extensions for arrays, collections, commands, dates, enumerables, exceptions, lists, numbers, objects, dependency injection, streams, strings, and tasks.
 
 ## Features
