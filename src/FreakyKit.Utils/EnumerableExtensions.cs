@@ -42,14 +42,7 @@ public static class EnumerableExtensions
     {
         if (source == null)
             return theDefault;
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        T item = source.SingleOrDefault(action);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-        if (item != null)
-            return item;
-
-        return theDefault;
+        return Enumerable.SingleOrDefault(source, action, theDefault);
     }
 
     public static T FirstOrDefault<T>(this IEnumerable<T> source,
@@ -57,28 +50,20 @@ public static class EnumerableExtensions
     {
         if (source == null)
             return theDefault;
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        T item = source.FirstOrDefault(action);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-        if (item != null)
-            return item;
-
-        return theDefault;
+        return Enumerable.FirstOrDefault(source, action, theDefault);
     }
 
     public static T ElementAtOrDefault<T>(this IEnumerable<T> source,
                                     int index, T theDefault)
     {
-        if (source == null)
+        if (source == null || index < 0)
             return theDefault;
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        T item = source.ElementAtOrDefault(index);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-        if (item != null)
-            return item;
-
+        int current = 0;
+        foreach (var item in source)
+        {
+            if (current++ == index)
+                return item;
+        }
         return theDefault;
     }
 

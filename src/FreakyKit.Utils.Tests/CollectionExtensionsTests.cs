@@ -27,7 +27,7 @@ public class CollectionExtensionsTests
     {
         var list = new List<int> { 1, 2, 3, 4, 5 };
 
-        list.RemoveRange(2, 4);
+        ((ICollection<int>)list).RemoveRange(2, 4);
 
         Assert.Equal([1, 3, 5], list);
     }

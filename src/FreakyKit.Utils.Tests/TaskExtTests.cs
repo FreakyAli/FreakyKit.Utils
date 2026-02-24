@@ -20,14 +20,14 @@ public class TaskExtTests
 
         task.RunConcurrently();
 
-        await Task.Delay(200); // give the task time to run
+        await Task.Delay(200, TestContext.Current.CancellationToken); // give the task time to run
         Assert.True(executed);
     }
 
     [Fact]
     public void RunConcurrently_AlreadyRunningTask_DoesNotThrow()
     {
-        var task = Task.Run(() => Task.Delay(50));
+        var task = Task.Run(() => Task.Delay(50, TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
 
         // Should not throw — only calls Start() when status is Created
         task.RunConcurrently();
@@ -118,7 +118,7 @@ public class TaskExtTests
     public async Task TimeoutAfter_ExceedsTimeout_ThrowsTimeoutException()
     {
         // A task that takes 10 seconds — far longer than the 50 ms timeout
-        var task = Task.Delay(TimeSpan.FromSeconds(10)).ContinueWith(_ => 0);
+        var task = Task.Delay(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken).ContinueWith(_ => 0);
 
         await Assert.ThrowsAsync<TimeoutException>(async () =>
             await task.TimeoutAfter<int>(TimeSpan.FromMilliseconds(50)));
