@@ -9,11 +9,7 @@ public static class ExceptionExtensions
         {
             stringBuilder.AppendLine(exception.Message);
             stringBuilder.AppendLine(exception.StackTrace);
-            var innerExp = exception.InnerException;
-            if (innerExp is not null)
-            {
-                exception = innerExp;
-            }
+            exception = exception.InnerException;
         }
         Trace.TraceError(stringBuilder.ToString());
     }
