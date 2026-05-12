@@ -256,7 +256,7 @@ public static class EnumerableExtensions
     public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> source, int count)
     {
         ArgumentNullException.ThrowIfNull(source);
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (count == 0) return [];
         return source.Shuffle().Take(count);
     }

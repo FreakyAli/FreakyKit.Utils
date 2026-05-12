@@ -51,7 +51,7 @@ public static class RandomExtensions
     public static string NextString(this Random random, int length, string? alphabet = null)
     {
         ArgumentNullException.ThrowIfNull(random);
-        if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
         var chars = alphabet ?? DefaultAlphabet;
         if (chars.Length == 0) throw new ArgumentException("Alphabet must be non-empty.", nameof(alphabet));
 

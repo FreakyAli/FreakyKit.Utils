@@ -119,7 +119,7 @@ public static partial class StringExtensions
     public static string Truncate(this string value, int maxLength, string ellipsis = "…")
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (maxLength < 0) throw new ArgumentOutOfRangeException(nameof(maxLength));
+        ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
         if (value.Length <= maxLength) return value;
         if (maxLength == 0) return string.Empty;
         return value[..maxLength] + ellipsis;
@@ -133,7 +133,7 @@ public static partial class StringExtensions
     public static string Repeat(this string value, int count)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (count == 0 || value.Length == 0) return string.Empty;
         var sb = new StringBuilder(value.Length * count);
         for (int i = 0; i < count; i++) sb.Append(value);
@@ -149,7 +149,7 @@ public static partial class StringExtensions
     public static string Left(this string value, int count)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         return count >= value.Length ? value : value[..count];
     }
 
@@ -162,7 +162,7 @@ public static partial class StringExtensions
     public static string Right(this string value, int count)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         return count >= value.Length ? value : value[^count..];
     }
 

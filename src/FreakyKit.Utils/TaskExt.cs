@@ -139,7 +139,7 @@ public static class TaskExt
     public static async Task Retry(this Func<Task> action, int maxAttempts, TimeSpan delay, Func<Exception, bool>? shouldRetry = null)
     {
         ArgumentNullException.ThrowIfNull(action);
-        if (maxAttempts < 1) throw new ArgumentOutOfRangeException(nameof(maxAttempts));
+        ArgumentOutOfRangeException.ThrowIfLessThan(maxAttempts, 1);
 
         Exception? last = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
@@ -171,7 +171,7 @@ public static class TaskExt
     public static async Task<T> Retry<T>(this Func<Task<T>> action, int maxAttempts, TimeSpan delay, Func<Exception, bool>? shouldRetry = null)
     {
         ArgumentNullException.ThrowIfNull(action);
-        if (maxAttempts < 1) throw new ArgumentOutOfRangeException(nameof(maxAttempts));
+        ArgumentOutOfRangeException.ThrowIfLessThan(maxAttempts, 1);
 
         Exception? last = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
