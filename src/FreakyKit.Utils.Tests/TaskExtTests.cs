@@ -123,4 +123,150 @@ public class TaskExtTests
         await Assert.ThrowsAsync<TimeoutException>(async () =>
             await task.TimeoutAfter<int>(TimeSpan.FromMilliseconds(50)));
     }
+
+    [Fact]
+    public async Task FireAndForget_FailedTask_InvokesHandler()
+    {
+        Exception? captured = null;
+        var task = Task.Run(() => throw new InvalidOperationException("boom"), TestContext.Current.CancellationToken);
+
+        task.FireAndForget(ex => captured = ex);
+
+        // Wait for the continuation to fire
+        for (int i = 0; i < 50 && captured is null; i++)
+            await Task.Delay(20, TestContext.Current.CancellationToken);
+
+        Assert.IsType<AggregateException>(captured);
+        Assert.Contains(captured!.InnerException?.Message ?? "", "boom");
+    }
+
+    [Fact]
+    public async Task FireAndForget_NoHandler_DoesNotPropagate()
+    {
+        var task = Task.Run(() => throw new InvalidOperationException("ignored"), TestContext.Current.CancellationToken);
+
+        task.FireAndForget();
+
+        // Give the continuation time to drain
+        await Task.Delay(50, TestContext.Current.CancellationToken);
+        // If no handler, exception is observed but discarded — test simply confirms no throw on this thread.
+    }
+
+    [Fact]
+    public async Task FireAndForget_NullTask_Throws()
+    {
+        await Task.Yield();
+        Task task = null!;
+
+        Assert.Throws<ArgumentNullException>(() => task.FireAndForget());
+    }
+
+    [Fact]
+    public async Task Retry_SucceedsOnSecondAttempt()
+    {
+        int attempts = 0;
+        Func<Task> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            if (attempts < 2) throw new InvalidOperationException("fail");
+        };
+
+        await action.Retry(3, TimeSpan.Zero);
+
+        Assert.Equal(2, attempts);
+    }
+
+    [Fact]
+    public async Task Retry_AllAttemptsFail_ThrowsLast()
+    {
+        int attempts = 0;
+        Func<Task> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            throw new InvalidOperationException($"attempt {attempts}");
+        };
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => action.Retry(3, TimeSpan.Zero));
+
+        Assert.Equal(3, attempts);
+        Assert.Equal("attempt 3", ex.Message);
+    }
+
+    [Fact]
+    public async Task Retry_ShouldRetryFalse_StopsImmediately()
+    {
+        int attempts = 0;
+        Func<Task> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            throw new InvalidOperationException("nope");
+        };
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            action.Retry(5, TimeSpan.Zero, _ => false));
+
+        Assert.Equal(1, attempts);
+    }
+
+    [Fact]
+    public async Task Retry_Generic_ReturnsResult()
+    {
+        int attempts = 0;
+        Func<Task<int>> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            if (attempts < 2) throw new InvalidOperationException();
+            return 42;
+        };
+
+        var result = await action.Retry(3, TimeSpan.Zero);
+
+        Assert.Equal(42, result);
+        Assert.Equal(2, attempts);
+    }
+
+    [Fact]
+    public async Task Retry_InvalidMaxAttempts_Throws()
+    {
+        Func<Task> action = () => Task.CompletedTask;
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => action.Retry(0, TimeSpan.Zero));
+    }
+
+    [Fact]
+    public async Task WithCancellation_CompletedFirst_ReturnsResult()
+    {
+        var cts = new CancellationTokenSource();
+        var task = Task.FromResult(123);
+
+        var result = await task.WithCancellation(cts.Token);
+
+        Assert.Equal(123, result);
+    }
+
+    [Fact]
+    public async Task WithCancellation_CancelledFirst_Throws()
+    {
+        using var cts = new CancellationTokenSource();
+        var task = Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+        cts.CancelAfter(50);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => task.WithCancellation(cts.Token));
+    }
+
+    [Fact]
+    public async Task WithCancellation_Generic_CancelledFirst_Throws()
+    {
+        using var cts = new CancellationTokenSource();
+        var task = Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken).ContinueWith(_ => 99);
+
+        cts.CancelAfter(50);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => task.WithCancellation(cts.Token));
+    }
 }

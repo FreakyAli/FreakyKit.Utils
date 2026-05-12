@@ -86,4 +86,52 @@ public class StreamExtensionsTests
 
         Assert.Equal(Convert.ToBase64String([]), result);
     }
+
+    [Fact]
+    public void ToByteArray_MemoryStream_ReturnsContents()
+    {
+        var data = new byte[] { 1, 2, 3, 4, 5 };
+        using var stream = new MemoryStream(data);
+
+        Assert.Equal(data, stream.ToByteArray());
+    }
+
+    [Fact]
+    public void ToByteArray_FromArbitraryStream_ReturnsContents()
+    {
+        var data = new byte[] { 9, 8, 7 };
+        var ms = new MemoryStream(data);
+        // Wrap to defeat the MemoryStream fast-path
+        using var stream = new BufferedStream(ms);
+
+        Assert.Equal(data, stream.ToByteArray());
+    }
+
+    [Fact]
+    public void ToByteArray_NullStream_Throws()
+    {
+        Stream stream = null!;
+
+        Assert.Throws<ArgumentNullException>(() => stream.ToByteArray());
+    }
+
+    [Fact]
+    public async Task ReadAllBytesAsync_ReturnsContents()
+    {
+        var data = new byte[] { 11, 22, 33 };
+        var ms = new MemoryStream(data);
+        using var stream = new BufferedStream(ms);
+
+        var result = await stream.ReadAllBytesAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(data, result);
+    }
+
+    [Fact]
+    public async Task ReadAllBytesAsync_NullStream_Throws()
+    {
+        Stream stream = null!;
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await stream.ReadAllBytesAsync(TestContext.Current.CancellationToken));
+    }
 }

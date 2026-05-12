@@ -38,4 +38,32 @@ public class ArrayExtensionsTests
 
         Assert.Equal(0, callCount);
     }
+
+    [Fact]
+    public void Fill_SetsAllElements()
+    {
+        var array = new int[5];
+
+        array.Fill(7);
+
+        Assert.Equal([7, 7, 7, 7, 7], array);
+    }
+
+    [Fact]
+    public void Fill_EmptyArray_NoOp()
+    {
+        var array = Array.Empty<int>();
+
+        array.Fill(7);
+
+        Assert.Empty(array);
+    }
+
+    [Fact]
+    public void Fill_NullArray_Throws()
+    {
+        int[] array = null!;
+
+        Assert.Throws<ArgumentNullException>(() => array.Fill(0));
+    }
 }

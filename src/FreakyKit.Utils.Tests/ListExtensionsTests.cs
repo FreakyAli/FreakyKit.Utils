@@ -168,4 +168,70 @@ public class ListExtensionsTests
 
         Assert.Throws<InvalidOperationException>(() => list.BinarySearch(x => x, 0));
     }
+
+    [Fact]
+    public void Swap_ExchangesElements()
+    {
+        var list = new List<int> { 10, 20, 30 };
+
+        list.Swap(0, 2);
+
+        Assert.Equal([30, 20, 10], list);
+    }
+
+    [Fact]
+    public void Swap_SameIndex_NoOp()
+    {
+        var list = new List<int> { 1, 2, 3 };
+
+        list.Swap(1, 1);
+
+        Assert.Equal([1, 2, 3], list);
+    }
+
+    [Fact]
+    public void Swap_OutOfRange_Throws()
+    {
+        var list = new List<int> { 1, 2 };
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.Swap(0, 5));
+    }
+
+    [Fact]
+    public void Move_ShiftsElement()
+    {
+        var list = new List<string> { "a", "b", "c", "d" };
+
+        list.Move(0, 2);
+
+        Assert.Equal(["b", "c", "a", "d"], list);
+    }
+
+    [Fact]
+    public void Move_BackwardsShift()
+    {
+        var list = new List<string> { "a", "b", "c", "d" };
+
+        list.Move(3, 0);
+
+        Assert.Equal(["d", "a", "b", "c"], list);
+    }
+
+    [Fact]
+    public void Move_SameIndex_NoOp()
+    {
+        var list = new List<string> { "a", "b" };
+
+        list.Move(0, 0);
+
+        Assert.Equal(["a", "b"], list);
+    }
+
+    [Fact]
+    public void Move_OutOfRange_Throws()
+    {
+        var list = new List<int> { 1 };
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.Move(0, 5));
+    }
 }

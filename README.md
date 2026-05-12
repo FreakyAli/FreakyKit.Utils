@@ -1,85 +1,119 @@
+<div align="center">
+
 # FreakyKit.Utils
 
-<div>
-   <a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/v/FreakyKit.Utils?color=blue&logo=nuget"></a>
-   <a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/dt/FreakyKit.Utils.svg"></a>
-   <a href="./LICENSE"><img src="https://img.shields.io/github/license/freakyali/FreakyKit.Utils"></a>
-   <a href="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils"><img src="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils/badge"></a>
-   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils.svg?type=shield"/></a>
+**A lightweight, dependency-free collection of C# extension methods for .NET**
+
+<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/v/FreakyKit.Utils?color=blue&logo=nuget&style=for-the-badge"></a>
+<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/dt/FreakyKit.Utils?style=for-the-badge"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/github/license/freakyali/FreakyKit.Utils?style=for-the-badge"></a>
+<a href="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils"><img src="https://img.shields.io/codefactor/grade/github/freakyali/FreakyKit.Utils?style=for-the-badge"></a>
+
+<br/>
+
+| .NET | Namespace | Dependencies |
+| :---: | :---: | :---: |
+| 8.0+ | `FreakyKit.Utils` | none |
+
+<br/>
+
 </div>
 
-A robust and lightweight collection of C# extension methods designed to simplify common programming patterns and utility operations in .NET projects. This library includes extensions for arrays, collections, commands, dates, enumerables, exceptions, lists, numbers, objects, dependency injection, streams, strings, and tasks.
+---
 
-## Features
+## Highlights
 
-- Array Extensions: Multi-dimensional array traversal and element-wise actions.
-- Collection Extensions: Simplified range add/remove operations for any collection.
-- Command Extensions: Safe WPF `ICommand` pattern execution.
-- DateTime Extensions: Weekday/weekend checks and workday calculations.
-- Enumerable Extensions: Functional utilities like `WithIndex`, `DistinctBy`, safe list methods, shuffling, and more.
-- Exception Extensions: Deep exception tracing to system logs.
-- List Extensions: High-performance removal, insertion, and binary search.
-- Number Extensions: Generic range checks for all number types.
-- Object Extensions: Cloning, safe type conversions, JSON/XML utilities, and structural comparison.
-- ServiceProvider Extension: Strongly-typed DI service fetching.
-- Stream Extensions: Stream conversions and Base64 encoding/decoding.
-- String Extensions: Text manipulations, Base64, reverse, currency, and validation utilities.
-- Task Extensions: WhenAll with aggregate exceptions, safe result retrieval, and task timeout support.
+> Extension methods only — drop the package in, add a `using`, every helper below becomes available on the receiver type.
+
+<div align="center">
+
+| Area | What you get |
+| :--- | :--- |
+| **Arrays** | Multi-dimensional traversal with element-wise callbacks. |
+| **Collections** | `AddRange` / `RemoveRange` for any `ICollection<T>`. |
+| **Commands** | `CanExecute`-safe `ICommand` invocation. |
+| **DateTime** | Weekday / weekend predicates and `NextWorkday`. |
+| **Enumerables** | `WithIndex`, `DistinctBy`, null-safe defaults, `Shuffle`, `ToObservable`. |
+| **Exceptions** | Full `InnerException` chain → `Trace`. |
+| **Lists** | `RemoveAll`, `InsertWhere`, key-projected `BinarySearch`. |
+| **Numbers** | Generic `IsBetween` for any `INumber<T>`. |
+| **Objects** | Cloning, type-test sugar, JSON / XML helpers, structural compare. |
+| **DI** | Strongly-typed `IServiceProvider.GetService<T>()`. |
+| **Streams** | `Stream` → `MemoryStream` / Base64. |
+| **Strings** | Base64, regex strip, alphanumeric / email validation, currency, reverse. |
+| **Tasks** | Aggregate-exception `WhenAll`, fire-and-forget, `TimeoutAfter`. |
+
+</div>
+
+---
 
 ## Installation
-
-Add the compiled DLL to your project, or copy the relevant extension files into your solution.
 
 ```
 dotnet add package FreakyKit.Utils
 ```
 
-## Usage
-
-Add a using directive to the `FreakyKit.Utils` namespace:
+Or via Package Manager Console:
 
 ```
+Install-Package FreakyKit.Utils -Version xx.xx.xx
+```
+
+### Initialization
+
+Add a single `using` and every extension below becomes available:
+
+```csharp
 using FreakyKit.Utils;
 
-// Array: Traverse a 2D array
+// Array: traverse a multi-dimensional array
 matrix.ForEach((array, position) => Console.WriteLine(array.GetValue(position)));
 
-// List: Remove items matching a predicate
-myList.RemoveAll(x => x.IsObsolete);
+// Enumerable: iterate with index
+foreach (var (item, idx) in items.WithIndex()) { /* ... */ }
 
-// String: Validate email
-bool isValid = "test@example.com".IsValidEmail();
+// String: validate email
+bool ok = "test@example.com".IsValidEmail();
 
-// Enumerable: Enumerate with index
-foreach (var (item, idx) in items.WithIndex()) { ... }
-
-// Number: Check range
+// Number: range check
 bool inRange = age.IsBetween(18, 65);
 
-// DateTime: Find next workday
-DateTime nextWorkday = today.NextWorkday();
-
-// Task: Await with timeout
+// Task: bound with a timeout
 await task.TimeoutAfter(TimeSpan.FromSeconds(10));
 ```
 
-
-For full API details, see the XML comments in each extension method.
+---
 
 ## Documentation
 
-- All extension classes are in the `FreakyKit.Utils` namespace.
-- Methods use strong typing, safe defaults, and minimal dependencies.
-- Most methods contain XML documentation accessible via IntelliSense.
+Full API docs for every extension class live in the [`docs/`](./docs/) folder.
 
-I am also planning to either add the documentation here or to the wiki soon. 
+---
 
-## Contributing
+### Like what you saw? Want to keep this repo alive?
 
-Contributions are welcome! Please submit issues and PRs for bug reports, new utilities, or improvements. All code must follow C# standard naming conventions and include XML documentation.
+<div align="center">
+
+[![Buy Me A Coffee](https://miro.medium.com/max/600/0*wrBJU05A3BULKcWA.gif)](https://www.buymeacoffee.com/FreakyAli)
+
+</div>
+
+---
 
 ## License
 
-This project is released under the MIT License.
+[MIT](https://github.com/FreakyAli/FreakyKit.Utils/blob/master/LICENSE)
 
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FFreakyAli%2FFreakyKit.Utils?ref=badge_large)
 
+---
+
+## Activity
+
+<div align="center">
+
+[![Star History Chart](https://api.star-history.com/svg?repos=FreakyAli/FreakyKit.Utils&type=Date)](https://star-history.com/#FreakyAli/FreakyKit.Utils&type=Date)
+
+![Alt](https://repobeats.axiom.co/api/embed/c1f79493ade6fb1939b12493d25aa4c5f5362005.svg "Repobeats analytics image")
+
+</div>
