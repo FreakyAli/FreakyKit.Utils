@@ -21,7 +21,7 @@ public static class CharExtensions
     /// <param name="count">Number of repetitions (must be non-negative).</param>
     public static string Repeat(this char ch, int count)
     {
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         return count == 0 ? string.Empty : new string(ch, count);
     }
 }
