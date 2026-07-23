@@ -9,10 +9,10 @@ public static class CharExtensions
     public static bool IsVowel(this char ch) => "aeiouAEIOU".Contains(ch);
 
     /// <summary>
-    /// Returns <c>true</c> when <paramref name="ch"/> is an English consonant (letter, not a vowel).
+    /// Returns <c>true</c> when <paramref name="ch"/> is an English consonant (ASCII letter a-z or A-Z, not a vowel).
     /// </summary>
     /// <param name="ch">Character to test.</param>
-    public static bool IsConsonant(this char ch) => char.IsLetter(ch) && !ch.IsVowel();
+    public static bool IsConsonant(this char ch) => ch >= 'A' && ch <= 'z' && char.IsLetter(ch) && !ch.IsVowel();
 
     /// <summary>
     /// Returns a string consisting of <paramref name="ch"/> repeated <paramref name="count"/> times.

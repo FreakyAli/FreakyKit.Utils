@@ -57,8 +57,12 @@ public static class DateTimeExtensions
     /// preserving <see cref="DateTime.Kind"/>.
     /// </summary>
     /// <param name="date">Reference date.</param>
-    public static DateTime EndOfDay(this DateTime date) =>
-        new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, date.Kind).AddDays(1).AddTicks(-1);
+    public static DateTime EndOfDay(this DateTime date)
+    {
+        if (date.Year == 9999 && date.Month == 12 && date.Day == 31)
+            return DateTime.MaxValue;
+        return new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, date.Kind).AddDays(1).AddTicks(-1);
+    }
 
     /// <summary>
     /// Returns <see cref="StartOfDay(DateTime)"/> of the first occurrence of <paramref name="firstDay"/>

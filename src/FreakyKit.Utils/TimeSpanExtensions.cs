@@ -33,7 +33,15 @@ public static class TimeSpanExtensions
         if (abs.Hours > 0) parts.Add($"{abs.Hours}h");
         if (parts.Count < 2 && abs.Minutes > 0) parts.Add($"{abs.Minutes}m");
         if (parts.Count < 2 && abs.Seconds > 0) parts.Add($"{abs.Seconds}s");
-        if (parts.Count == 0) parts.Add($"{abs.Milliseconds}ms");
+        if (parts.Count == 0)
+        {
+            if (abs.Milliseconds > 0)
+                parts.Add($"{abs.Milliseconds}ms");
+            else if (abs.Ticks > 0)
+                parts.Add($"{abs.Ticks}tick{(abs.Ticks == 1 ? "" : "s")}");
+            else
+                parts.Add("0s");
+        }
 
         return sign + string.Join(" ", parts.Take(2));
     }

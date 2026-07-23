@@ -112,8 +112,6 @@ Full API docs for every extension class live in the [`docs/`](./docs/) folder.
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=FreakyAli/FreakyKit.Utils&type=Date)](https://star-history.com/#FreakyAli/FreakyKit.Utils&type=Date)
-
-![Alt](https://repobeats.axiom.co/api/embed/c1f79493ade6fb1939b12493d25aa4c5f5362005.svg "Repobeats analytics image")
+![Repobeats repository analytics](https://repobeats.axiom.co/api/embed/c1f79493ade6fb1939b12493d25aa4c5f5362005.svg "Repobeats analytics image")
 
 </div>

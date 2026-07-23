@@ -26,6 +26,14 @@ public class CharExtensionsTests
     }
 
     [Fact]
+    public void IsConsonant_NonAsciiLetter_ReturnsFalse()
+    {
+        // Non-ASCII letters should return false
+        Assert.False('é'.IsConsonant());
+        Assert.False('ñ'.IsConsonant());
+    }
+
+    [Fact]
     public void Repeat_Three()
     {
         Assert.Equal("---", '-'.Repeat(3));

@@ -629,6 +629,7 @@ Hex / Base64 / string conversions for `byte[]`.
 
 ```csharp
 using FreakyKit.Utils;
+using System.Text;
 
 byte[] data = [0xDE, 0xAD, 0xBE, 0xEF];
 

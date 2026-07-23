@@ -105,9 +105,12 @@ public class UriExtensionsTests
     [InlineData("http://localhost", true)]
     [InlineData("http://LOCALHOST:8080", true)]
     [InlineData("http://127.0.0.1", true)]
+    [InlineData("http://127.0.0.2", true)]
+    [InlineData("http://127.255.255.255", true)]
     [InlineData("http://[::1]", true)]
     [InlineData("http://example.com", false)]
     [InlineData("http://192.168.1.1", false)]
+    [InlineData("http://127.1.0.0", true)]
     public void IsLocalhost(string urlString, bool expected)
     {
         var uri = new Uri(urlString);

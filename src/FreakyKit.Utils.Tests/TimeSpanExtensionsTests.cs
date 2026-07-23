@@ -60,4 +60,14 @@ public class TimeSpanExtensionsTests
         Assert.StartsWith("-", result);
         Assert.NotEmpty(result);
     }
+
+    [Fact]
+    public void ToHumanString_OneTick_ShowsTickPrecision()
+    {
+        var result = TimeSpan.FromTicks(1).ToHumanString();
+
+        // Should show tick precision, not "0ms"
+        Assert.NotEqual("0s", result);
+        Assert.Contains("tick", result);
+    }
 }

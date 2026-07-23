@@ -78,16 +78,20 @@ public static class UriExtensions
     }
 
     /// <summary>
-    /// Returns <c>true</c> when <paramref name="uri"/>'s host is <c>localhost</c>, <c>127.0.0.1</c>, or <c>::1</c>.
+    /// Returns <c>true</c> when <paramref name="uri"/>'s host is <c>localhost</c> (case-insensitive) or
+    /// an IP loopback address (127.0.0.0/8 or ::1 / IPv6 loopback).
     /// </summary>
     /// <param name="uri">The URI to inspect.</param>
     public static bool IsLocalhost(this Uri uri)
     {
         ArgumentNullException.ThrowIfNull(uri);
         var host = uri.Host;
-        return string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase)
-            || host == "127.0.0.1"
-            || host == "::1"
-            || host == "[::1]";
+        if (string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (IPAddress.TryParse(host, out var ip))
+            return IPAddress.IsLoopback(ip);
+
+        return false;
     }
 }

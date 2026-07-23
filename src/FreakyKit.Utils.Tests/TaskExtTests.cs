@@ -317,7 +317,7 @@ public class TaskExtTests
 
         // Stack trace should be preserved (non-null and contain method name)
         Assert.NotNull(ex.StackTrace);
-        Assert.Contains(nameof(action), ex.StackTrace);
+        Assert.Contains(nameof(Retry_PreservesExceptionStackTrace), ex.StackTrace);
     }
 
     [Fact]
@@ -335,6 +335,6 @@ public class TaskExtTests
 
         // Stack trace should be preserved
         Assert.NotNull(ex.StackTrace);
-        Assert.Contains(nameof(action), ex.StackTrace);
+        Assert.Contains(nameof(Retry_Generic_PreservesExceptionStackTrace), ex.StackTrace);
     }
 }

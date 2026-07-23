@@ -51,7 +51,7 @@ public static class StreamExtensions
 
     /// <summary>
     /// Fully reads <paramref name="stream"/> into a new byte array, from the current Position to Length.
-    /// Fast-path uses <see cref="MemoryStream.TryGetBuffer"/> for zero-copy access.
+    /// Fast-path uses <see cref="MemoryStream.TryGetBuffer"/> to avoid intermediate <see cref="MemoryStream.ToArray"/> allocation.
     /// </summary>
     /// <param name="stream">Source stream.</param>
     public static byte[] ToByteArray(this Stream stream)
@@ -87,6 +87,7 @@ public static class StreamExtensions
     public static async Task<byte[]> ReadAllBytesAsync(this Stream stream, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
+        token.ThrowIfCancellationRequested();
         if (stream is MemoryStream ms)
         {
             int start = (int)ms.Position;

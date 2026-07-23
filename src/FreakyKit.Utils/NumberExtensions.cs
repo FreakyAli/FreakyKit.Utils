@@ -60,7 +60,8 @@ public static class NumberExtensions
     /// Linearly remaps <paramref name="value"/> from the source range
     /// [<paramref name="fromMin"/>, <paramref name="fromMax"/>] to the target range
     /// [<paramref name="toMin"/>, <paramref name="toMax"/>].
-    /// For integral types, arithmetic overflow throws <see cref="OverflowException"/>.
+    /// For integral types, integer division truncates toward zero; use floating-point types for rounding.
+    /// Arithmetic overflow throws <see cref="OverflowException"/>.
     /// </summary>
     /// <typeparam name="T">Any numeric type implementing <see cref="INumber{TSelf}"/>.</typeparam>
     /// <param name="value">Value in the source range.</param>
