@@ -386,9 +386,9 @@ string? base64 = buffered.GetBase64();
 | Method | Returns | Description |
 | --- | --- | --- |
 | `GetMemoryStream()` | `MemoryStream` | Copies the source stream into a new `MemoryStream` and rewinds it to position 0. |
-| `GetBase64()` | `string?` | Returns the stream contents (from current Position to end) as a Base64-encoded string. Fast-path for `MemoryStream`. Returns `null` for a null receiver. |
-| `ToByteArray()` | `byte[]` | Fully reads the stream into a new byte array. Fast-path for `MemoryStream`. |
-| `ReadAllBytesAsync(CancellationToken token = default)` | `Task<byte[]>` | Async variant of `ToByteArray`. |
+| `GetBase64()` | `string?` | Returns the stream contents (from current Position to end) as a Base64-encoded string. Zero-copy via `TryGetBuffer` on `MemoryStream`; returns empty string if Position ≥ Length. Returns `null` for a null receiver. |
+| `ToByteArray()` | `byte[]` | Reads the stream from current Position to end into a new byte array. Fast-path for `MemoryStream` via `TryGetBuffer`. |
+| `ReadAllBytesAsync(CancellationToken token = default)` | `Task<byte[]>` | Async variant of `ToByteArray`; respects current Position. |
 
 ---
 
@@ -483,8 +483,8 @@ catch (TimeoutException)
 | `WithAggregateException<T>(this Task<T> source)` | `Task<T>` | Generic overload of the above. |
 | `TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout)` | `Task<TResult>` | Awaits the task; throws `TimeoutException` if the timeout elapses first. |
 | `TimeoutAfter(this Task task, TimeSpan timeout)` | `Task` | Non-generic overload. Throws `TimeoutException` if the timeout elapses first. |
-| `FireAndForget(this Task task, Action<Exception>? onException = null)` | `void` | Detaches the task and routes failures to the optional handler. |
-| `Retry(this Func<Task> action, int maxAttempts, TimeSpan delay, Func<Exception, bool>? shouldRetry = null)` | `Task` | Retries the action on failure; re-throws the last exception when all attempts fail. Generic `Func<Task<T>>` overload also provided. |
+| `FireAndForget(this Task task, Action<Exception>? onException = null)` | `void` | Starts the task (if `Created`) and routes failures to the optional handler. Cancellation is treated as failure. |
+| `Retry(this Func<Task> action, int maxAttempts, TimeSpan delay, Func<Exception, bool>? shouldRetry = null)` | `Task` | Retries the action on failure; preserves the exception's original stack trace. Re-throws the last exception when all attempts fail. Generic `Func<Task<T>>` overload also provided. |
 | `WithCancellation(this Task task, CancellationToken token)` | `Task` | Awaits the task with external cancellation. Generic `Task<T>` overload also provided. |
 
 ---

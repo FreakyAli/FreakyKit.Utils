@@ -360,4 +360,30 @@ public class EnumerableExtensionsTests
     {
         Assert.Empty(new[] { 1, 2, 3 }.TakeRandom(0));
     }
+
+    [Fact]
+    public void TakeRandom_CountExceedsLength_ResultsAreShuffled()
+    {
+        // When count >= source size, all elements are returned but shuffled
+        // Test multiple iterations to detect if shuffling is happening
+        var source = Enumerable.Range(1, 10).ToArray();
+        var inOriginalOrder = 0;
+
+        // Run multiple times to see if we ever get original order
+        for (int i = 0; i < 5; i++)
+        {
+            var result = source.TakeRandom(source.Length).ToArray();
+
+            // Verify all elements are present
+            Assert.Equal(source.Length, result.Length);
+            Assert.Equal(source.OrderBy(x => x), result.OrderBy(x => x));
+
+            // Check if result is in original order
+            if (result.SequenceEqual(source))
+                inOriginalOrder++;
+        }
+
+        // With proper shuffling, we should rarely (never in 5 tries) get the exact original order
+        Assert.True(inOriginalOrder < 5, "Results should be shuffled, not in original order");
+    }
 }

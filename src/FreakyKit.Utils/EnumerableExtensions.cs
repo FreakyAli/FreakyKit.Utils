@@ -267,7 +267,7 @@ public static class EnumerableExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
         if (count == 0) return [];
 
-        var reservoir = new List<T>(count);
+        var reservoir = new List<T>();
         var rng = Random.Shared;
         int index = 0;
 
@@ -286,6 +286,16 @@ public static class EnumerableExtensions
             index++;
         }
 
-        return reservoir;
+        if (reservoir.Count == 0) return [];
+
+        T[] array = reservoir.ToArray();
+        for (int n = array.Length; n > 1;)
+        {
+            int k = rng.Next(n--);
+            if (n != k)
+                (array[n], array[k]) = (array[k], array[n]);
+        }
+
+        return array;
     }
 }

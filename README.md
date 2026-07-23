@@ -56,7 +56,7 @@ dotnet add package FreakyKit.Utils
 Or via Package Manager Console:
 
 ```powershell
-Install-Package FreakyKit.Utils -Version xx.xx.xx
+Install-Package FreakyKit.Utils
 ```
 
 ### Initialization

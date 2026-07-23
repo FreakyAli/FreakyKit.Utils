@@ -287,4 +287,54 @@ public class TaskExtTests
 
         await Assert.ThrowsAsync<OperationCanceledException>(() => task.WithCancellation(cts.Token));
     }
+
+    [Fact]
+    public async Task FireAndForget_CreatedTask_StartsAutomatically()
+    {
+        bool executed = false;
+        var task = new Task(() => { executed = true; });
+
+        task.FireAndForget();
+
+        // Wait for the task to complete
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        Assert.True(executed, "Created task should be automatically started");
+    }
+
+    [Fact]
+    public async Task Retry_PreservesExceptionStackTrace()
+    {
+        int attempts = 0;
+        Func<Task> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            throw new InvalidOperationException($"attempt {attempts}");
+        };
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => action.Retry(2, TimeSpan.Zero));
+
+        // Stack trace should be preserved (non-null and contain method name)
+        Assert.NotNull(ex.StackTrace);
+        Assert.Contains(nameof(action), ex.StackTrace);
+    }
+
+    [Fact]
+    public async Task Retry_Generic_PreservesExceptionStackTrace()
+    {
+        int attempts = 0;
+        Func<Task<int>> action = async () =>
+        {
+            attempts++;
+            await Task.Yield();
+            throw new ArgumentException($"attempt {attempts}");
+        };
+
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => action.Retry(2, TimeSpan.Zero));
+
+        // Stack trace should be preserved
+        Assert.NotNull(ex.StackTrace);
+        Assert.Contains(nameof(action), ex.StackTrace);
+    }
 }

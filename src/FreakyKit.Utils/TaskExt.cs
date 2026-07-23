@@ -115,7 +115,8 @@ public static class TaskExt
 
     /// <summary>
     /// Starts (or observes) <paramref name="task"/> without awaiting it and silently routes any failure to
-    /// <paramref name="onException"/> (if supplied). Cancellation is treated as a failure too.
+    /// <paramref name="onException"/> (if supplied). Automatically starts tasks in the <see cref="TaskStatus.Created"/>
+    /// state. Cancellation is treated as a failure too.
     /// </summary>
     /// <remarks>
     /// Use only when the caller is genuinely indifferent to the result. Unhandled exceptions never propagate.
@@ -125,12 +126,14 @@ public static class TaskExt
     public static void FireAndForget(this Task task, Action<Exception>? onException = null)
     {
         ArgumentNullException.ThrowIfNull(task);
+        if (task.Status == TaskStatus.Created)
+            task.Start();
         _ = task.ContinueWith(t =>
         {
             if (t.Exception is { } ex)
                 onException?.Invoke(ex);
             else if (t.IsCanceled)
-                onException?.Invoke(new OperationCanceledException());
+                onException?.Invoke(new OperationCanceledException("Task was canceled."));
         }, CancellationToken.None, TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.Default);
     }
 
@@ -148,7 +151,7 @@ public static class TaskExt
         ArgumentNullException.ThrowIfNull(action);
         ArgumentOutOfRangeException.ThrowIfLessThan(maxAttempts, 1);
 
-        Exception? last = null;
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo? last = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
             try
@@ -158,12 +161,12 @@ public static class TaskExt
             }
             catch (Exception ex) when (shouldRetry?.Invoke(ex) ?? true)
             {
-                last = ex;
+                last = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex);
                 if (attempt < maxAttempts && delay > TimeSpan.Zero)
                     await Task.Delay(delay).ConfigureAwait(false);
             }
         }
-        throw last!;
+        last?.Throw();
     }
 
     /// <summary>
@@ -180,7 +183,7 @@ public static class TaskExt
         ArgumentNullException.ThrowIfNull(action);
         ArgumentOutOfRangeException.ThrowIfLessThan(maxAttempts, 1);
 
-        Exception? last = null;
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo? last = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
             try
@@ -189,12 +192,13 @@ public static class TaskExt
             }
             catch (Exception ex) when (shouldRetry?.Invoke(ex) ?? true)
             {
-                last = ex;
+                last = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex);
                 if (attempt < maxAttempts && delay > TimeSpan.Zero)
                     await Task.Delay(delay).ConfigureAwait(false);
             }
         }
-        throw last!;
+        last?.Throw();
+        throw new InvalidOperationException("Retry exhausted without completing.");
     }
 
     /// <summary>
