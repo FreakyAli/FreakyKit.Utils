@@ -28,4 +28,70 @@ public class ExceptionExtensionsTests
 
         level1.TraceException();
     }
+
+    [Fact]
+    public void GetRootCause_NoInner_ReturnsSelf()
+    {
+        var ex = new InvalidOperationException("solo");
+
+        Assert.Same(ex, ex.GetRootCause());
+    }
+
+    [Fact]
+    public void GetRootCause_DeepChain_ReturnsInnermost()
+    {
+        var leaf = new ArgumentException("leaf");
+        var mid = new InvalidOperationException("mid", leaf);
+        var root = new Exception("root", mid);
+
+        Assert.Same(leaf, root.GetRootCause());
+    }
+
+    [Fact]
+    public void GetAllMessages_NoInner_ReturnsSingle()
+    {
+        var ex = new Exception("only");
+
+        Assert.Equal("only", ex.GetAllMessages());
+    }
+
+    [Fact]
+    public void GetAllMessages_DeepChain_JoinsAll()
+    {
+        var leaf = new Exception("leaf");
+        var mid = new Exception("mid", leaf);
+        var root = new Exception("root", mid);
+
+        Assert.Equal("root -> mid -> leaf", root.GetAllMessages());
+    }
+
+    [Fact]
+    public void GetAllMessages_CustomSeparator()
+    {
+        var leaf = new Exception("leaf");
+        var root = new Exception("root", leaf);
+
+        Assert.Equal("root | leaf", root.GetAllMessages(" | "));
+    }
+
+    [Fact]
+    public void TraceException_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.TraceException());
+    }
+
+    [Fact]
+    public void GetRootCause_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.GetRootCause());
+    }
+
+    [Fact]
+    public void GetAllMessages_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.GetAllMessages());
+    }
 }

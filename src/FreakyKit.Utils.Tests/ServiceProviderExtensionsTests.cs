@@ -40,4 +40,29 @@ public class ServiceProviderExtensionsTests
 
         Assert.Throws<ArgumentNullException>(() => provider.GetService<string>());
     }
+
+    [Fact]
+    public void GetRequiredService_Registered_ReturnsInstance()
+    {
+        var provider = new SimpleServiceProvider();
+        provider.Register("ok");
+
+        Assert.Equal("ok", provider.GetRequiredService<string>());
+    }
+
+    [Fact]
+    public void GetRequiredService_Unregistered_Throws()
+    {
+        var provider = new SimpleServiceProvider();
+
+        Assert.Throws<InvalidOperationException>(() => provider.GetRequiredService<string>());
+    }
+
+    [Fact]
+    public void GetRequiredService_NullProvider_ThrowsArgumentNullException()
+    {
+        IServiceProvider provider = null!;
+
+        Assert.Throws<ArgumentNullException>(() => provider.GetRequiredService<string>());
+    }
 }

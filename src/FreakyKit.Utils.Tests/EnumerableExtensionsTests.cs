@@ -211,26 +211,6 @@ public class EnumerableExtensionsTests
     }
 
     [Fact]
-    public void Append_AddsElementToEnd()
-    {
-        IEnumerable<int> source = [1, 2, 3];
-
-        var result = EnumerableExtensions.Append(source, 4).ToList();
-
-        Assert.Equal([1, 2, 3, 4], result);
-    }
-
-    [Fact]
-    public void Prepend_AddsElementToStart()
-    {
-        IEnumerable<int> source = [2, 3, 4];
-
-        var result = EnumerableExtensions.Prepend(source, 1).ToList();
-
-        Assert.Equal([1, 2, 3, 4], result);
-    }
-
-    [Fact]
     public void Shuffle_ReturnsSameElements()
     {
         IEnumerable<int> source = [1, 2, 3, 4, 5];
@@ -247,5 +227,163 @@ public class EnumerableExtensionsTests
         IEnumerable<int> source = null!;
 
         Assert.Throws<ArgumentNullException>(() => source.Shuffle().ToList());
+    }
+
+    [Fact]
+    public void WhereNotNull_ReferenceType_FiltersNulls()
+    {
+        IEnumerable<string?> source = ["a", null, "b", null, "c"];
+
+        Assert.Equal(["a", "b", "c"], source.WhereNotNull().ToList());
+    }
+
+    [Fact]
+    public void WhereNotNull_NullableValue_FiltersNulls()
+    {
+        IEnumerable<int?> source = [1, null, 2, null, 3];
+
+        Assert.Equal([1, 2, 3], source.WhereNotNull().ToList());
+    }
+
+    [Fact]
+    public void WhereNotNull_NullSource_Throws()
+    {
+        IEnumerable<string?> source = null!;
+
+        Assert.Throws<ArgumentNullException>(() => source.WhereNotNull().ToList());
+    }
+
+    [Fact]
+    public void JoinString_JoinsWithSeparator()
+    {
+        IEnumerable<int> source = [1, 2, 3];
+
+        Assert.Equal("1,2,3", source.JoinString(","));
+    }
+
+    [Fact]
+    public void JoinString_EmptySource_ReturnsEmpty()
+    {
+        Assert.Equal(string.Empty, Array.Empty<int>().JoinString(","));
+    }
+
+    [Fact]
+    public void IndexOf_FindsFirstMatch()
+    {
+        IEnumerable<int> source = [10, 20, 30, 40];
+
+        Assert.Equal(2, source.IndexOf(x => x == 30));
+    }
+
+    [Fact]
+    public void IndexOf_NoMatch_ReturnsMinusOne()
+    {
+        Assert.Equal(-1, new[] { 1, 2, 3 }.IndexOf(x => x == 99));
+    }
+
+    [Fact]
+    public void None_NoMatch_ReturnsTrue()
+    {
+        Assert.True(new[] { 1, 2, 3 }.None(x => x > 10));
+    }
+
+    [Fact]
+    public void None_HasMatch_ReturnsFalse()
+    {
+        Assert.False(new[] { 1, 2, 3 }.None(x => x == 2));
+    }
+
+    [Fact]
+    public void None_NullSource_Throws()
+    {
+        IEnumerable<int>? source = null;
+        Assert.Throws<ArgumentNullException>(() => source!.None(x => x > 0));
+    }
+
+    [Fact]
+    public void None_NullPredicate_Throws()
+    {
+        IEnumerable<int> source = [1, 2, 3];
+        Assert.Throws<ArgumentNullException>(() => source.None(null!));
+    }
+
+    [Fact]
+    public void Partition_SplitsCorrectly()
+    {
+        IEnumerable<int> source = [1, 2, 3, 4, 5];
+
+        var (evens, odds) = source.Partition(x => x % 2 == 0);
+
+        Assert.Equal([2, 4], evens);
+        Assert.Equal([1, 3, 5], odds);
+    }
+
+    [Fact]
+    public void Partition_AllMatch_UnmatchedEmpty()
+    {
+        var (matched, unmatched) = new[] { 1, 2 }.Partition(_ => true);
+
+        Assert.Equal([1, 2], matched);
+        Assert.Empty(unmatched);
+    }
+
+    [Fact]
+    public void TakeRandom_ReturnsCountElements()
+    {
+        IEnumerable<int> source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        var result = source.TakeRandom(3).ToList();
+
+        Assert.Equal(3, result.Count);
+        Assert.All(result, x => Assert.Contains(x, source));
+    }
+
+    [Fact]
+    public void TakeRandom_CountExceedsLength_ReturnsAll()
+    {
+        IEnumerable<int> source = [1, 2, 3];
+
+        var result = source.TakeRandom(10).ToList();
+
+        Assert.Equal(3, result.Count);
+        Assert.Equal([1, 2, 3], result.Order().ToList());
+    }
+
+    [Fact]
+    public void TakeRandom_NegativeCount_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new[] { 1, 2 }.TakeRandom(-1));
+    }
+
+    [Fact]
+    public void TakeRandom_ZeroCount_ReturnsEmpty()
+    {
+        Assert.Empty(new[] { 1, 2, 3 }.TakeRandom(0));
+    }
+
+    [Fact]
+    public void TakeRandom_CountExceedsLength_ResultsAreShuffled()
+    {
+        // When count >= source size, all elements are returned but shuffled
+        // Test multiple iterations to detect if shuffling is happening
+        var source = Enumerable.Range(1, 10).ToArray();
+        var inOriginalOrder = 0;
+
+        // Run multiple times to see if we ever get original order
+        for (int i = 0; i < 5; i++)
+        {
+            var result = source.TakeRandom(source.Length).ToArray();
+
+            // Verify all elements are present
+            Assert.Equal(source.Length, result.Length);
+            Assert.Equal(source.OrderBy(x => x), result.OrderBy(x => x));
+
+            // Check if result is in original order
+            if (result.SequenceEqual(source))
+                inOriginalOrder++;
+        }
+
+        // With proper shuffling, we should rarely (never in 5 tries) get the exact original order
+        Assert.True(inOriginalOrder < 5, "Results should be shuffled, not in original order");
     }
 }

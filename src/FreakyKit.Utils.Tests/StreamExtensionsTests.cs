@@ -86,4 +86,116 @@ public class StreamExtensionsTests
 
         Assert.Equal(Convert.ToBase64String([]), result);
     }
+
+    [Fact]
+    public void GetBase64_MemoryStream_RespectsPosition()
+    {
+        byte[] data = [1, 2, 3, 4, 5];
+        using var stream = new MemoryStream(data);
+        stream.Position = 2; // Start from byte 3
+
+        var result = stream.GetBase64();
+
+        // Should encode only [3, 4, 5], not the entire buffer
+        var expected = Convert.ToBase64String([3, 4, 5]);
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToByteArray_MemoryStream_ReturnsContents()
+    {
+        var data = new byte[] { 1, 2, 3, 4, 5 };
+        using var stream = new MemoryStream(data);
+
+        Assert.Equal(data, stream.ToByteArray());
+    }
+
+    [Fact]
+    public void ToByteArray_FromArbitraryStream_ReturnsContents()
+    {
+        var data = new byte[] { 9, 8, 7 };
+        var ms = new MemoryStream(data);
+        // Wrap to defeat the MemoryStream fast-path
+        using var stream = new BufferedStream(ms);
+
+        Assert.Equal(data, stream.ToByteArray());
+    }
+
+    [Fact]
+    public void ToByteArray_NullStream_Throws()
+    {
+        Stream stream = null!;
+
+        Assert.Throws<ArgumentNullException>(() => stream.ToByteArray());
+    }
+
+    [Fact]
+    public async Task ReadAllBytesAsync_ReturnsContents()
+    {
+        var data = new byte[] { 11, 22, 33 };
+        var ms = new MemoryStream(data);
+        using var stream = new BufferedStream(ms);
+
+        var result = await stream.ReadAllBytesAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(data, result);
+    }
+
+    [Fact]
+    public async Task ReadAllBytesAsync_NullStream_Throws()
+    {
+        Stream stream = null!;
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await stream.ReadAllBytesAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public void GetBase64_MemoryStream_PositionAtEnd_ReturnsEmpty()
+    {
+        byte[] data = [1, 2, 3, 4, 5];
+        using var stream = new MemoryStream(data);
+        stream.Position = stream.Length; // Position at end
+
+        var result = stream.GetBase64();
+
+        Assert.Equal(string.Empty, result);
+    }
+
+    [Fact]
+    public void ToByteArray_MemoryStream_RespectsPosition()
+    {
+        byte[] data = [10, 20, 30, 40, 50];
+        using var stream = new MemoryStream(data);
+        stream.Position = 2; // Start from byte 30
+
+        var result = stream.ToByteArray();
+
+        // Should return only [30, 40, 50]
+        Assert.Equal([30, 40, 50], result);
+    }
+
+    [Fact]
+    public void ToByteArray_MemoryStream_PositionAtEnd_ReturnsEmpty()
+    {
+        byte[] data = [1, 2, 3];
+        using var stream = new MemoryStream(data);
+        stream.Position = stream.Length;
+
+        var result = stream.ToByteArray();
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task ReadAllBytesAsync_MemoryStream_RespectsPosition()
+    {
+        byte[] data = [10, 20, 30, 40, 50];
+        using var stream = new MemoryStream(data);
+        stream.Position = 1; // Start from byte 20
+
+        var result = await stream.ReadAllBytesAsync(TestContext.Current.CancellationToken);
+
+        // Should return only [20, 30, 40, 50]
+        Assert.Equal([20, 30, 40, 50], result);
+    }
 }
