@@ -90,7 +90,7 @@ public static class ListExtensions
         {
             int mid = min + ((max - min) / 2);
             TKey midKey = keySelector(list[mid]);
-            int comp = midKey.CompareTo(key);
+            int comp = Comparer<TKey>.Default.Compare(midKey, key);
             if (comp < 0)
             {
                 min = mid + 1;

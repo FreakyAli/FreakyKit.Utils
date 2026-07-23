@@ -49,4 +49,15 @@ public class TimeSpanExtensionsTests
     {
         Assert.Equal("-1h 30m", TimeSpan.FromMinutes(-90).ToHumanString());
     }
+
+    [Fact]
+    public void ToHumanString_MinValue_DoesNotThrow()
+    {
+        // TimeSpan.MinValue.Duration() would overflow, so we handle it specially
+        var result = TimeSpan.MinValue.ToHumanString();
+
+        // Should have a minus prefix and some reasonable output without throwing
+        Assert.StartsWith("-", result);
+        Assert.NotEmpty(result);
+    }
 }

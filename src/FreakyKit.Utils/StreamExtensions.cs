@@ -16,11 +16,11 @@ public static class StreamExtensions
     }
 
     /// <summary>
-    /// Returns the contents of <paramref name="stream"/> as a Base64-encoded string. Uses
-    /// <see cref="MemoryStream.ToArray"/> when possible to avoid an extra copy. Returns <c>null</c>
-    /// when <paramref name="stream"/> is <c>null</c>.
+    /// Returns the contents of <paramref name="stream"/> as a Base64-encoded string, starting from the
+    /// current <see cref="Stream.Position"/> to <see cref="Stream.Length"/>. Uses <see cref="MemoryStream.ToArray"/>
+    /// when possible to avoid an extra copy. Returns <c>null</c> when <paramref name="stream"/> is <c>null</c>.
     /// </summary>
-    /// <param name="stream">Stream whose remaining bytes should be encoded.</param>
+    /// <param name="stream">Stream whose remaining bytes (from Position to end) should be encoded.</param>
     public static string? GetBase64(this Stream stream)
     {
         if (stream == null)
@@ -30,8 +30,12 @@ public static class StreamExtensions
 
         if (stream is MemoryStream memStream)
         {
-            var allBytes = memStream.ToArray();
-            return Convert.ToBase64String(allBytes);
+            int start = (int)memStream.Position;
+            int count = (int)(memStream.Length - memStream.Position);
+            if (memStream.TryGetBuffer(out var seg))
+                return Convert.ToBase64String(seg.Array!, seg.Offset + start, count);
+            byte[] memBytes = memStream.ToArray();
+            return Convert.ToBase64String(memBytes, start, count);
         }
 
         byte[] bytes;

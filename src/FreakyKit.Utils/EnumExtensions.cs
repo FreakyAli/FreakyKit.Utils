@@ -31,22 +31,25 @@ public static class EnumExtensions
 
     /// <summary>
     /// Parses <paramref name="value"/> as a member of enum type <typeparamref name="TEnum"/>. Case-insensitive.
+    /// Rejects undefined numeric values (e.g., "99" for an enum without that member).
     /// </summary>
     /// <typeparam name="TEnum">Target enum type.</typeparam>
-    /// <param name="value">String to parse.</param>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> does not match any member.</exception>
+    /// <param name="value">String to parse (name or numeric value).</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> does not match any defined member.</exception>
     public static TEnum ToEnum<TEnum>(this string value) where TEnum : struct, Enum
     {
         ArgumentNullException.ThrowIfNull(value);
-        return Enum.Parse<TEnum>(value, ignoreCase: true);
+        if (!Enum.TryParse(value, ignoreCase: true, out TEnum parsed) || !Enum.IsDefined(typeof(TEnum), parsed))
+            throw new ArgumentException($"'{value}' is not a valid value for {typeof(TEnum).Name}", nameof(value));
+        return parsed;
     }
 
     /// <summary>
     /// Attempts to parse <paramref name="value"/> as a member of enum type <typeparamref name="TEnum"/>.
-    /// Case-insensitive. Returns <c>false</c> on failure.
+    /// Case-insensitive. Rejects undefined numeric values. Returns <c>false</c> on failure.
     /// </summary>
     /// <typeparam name="TEnum">Target enum type.</typeparam>
-    /// <param name="value">String to parse.</param>
+    /// <param name="value">String to parse (name or numeric value).</param>
     /// <param name="result">Parsed enum on success; default on failure.</param>
     public static bool TryToEnum<TEnum>(this string value, out TEnum result) where TEnum : struct, Enum
     {
@@ -55,6 +58,12 @@ public static class EnumExtensions
             result = default;
             return false;
         }
-        return Enum.TryParse(value, ignoreCase: true, out result);
+        if (!Enum.TryParse(value, ignoreCase: true, out TEnum parsed) || !Enum.IsDefined(typeof(TEnum), parsed))
+        {
+            result = default;
+            return false;
+        }
+        result = parsed;
+        return true;
     }
 }

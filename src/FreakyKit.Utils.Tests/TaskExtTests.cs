@@ -162,6 +162,24 @@ public class TaskExtTests
     }
 
     [Fact]
+    public async Task FireAndForget_CanceledTask_InvokesHandlerWithOperationCanceledException()
+    {
+        Exception? captured = null;
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+        var task = Task.FromCanceled(cts.Token);
+
+        task.FireAndForget(ex => captured = ex);
+
+        // Wait for the continuation to fire
+        for (int i = 0; i < 50 && captured is null; i++)
+            await Task.Delay(20, TestContext.Current.CancellationToken);
+
+        Assert.NotNull(captured);
+        Assert.IsType<OperationCanceledException>(captured);
+    }
+
+    [Fact]
     public async Task Retry_SucceedsOnSecondAttempt()
     {
         int attempts = 0;

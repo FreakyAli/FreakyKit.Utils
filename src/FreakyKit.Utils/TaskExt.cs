@@ -51,6 +51,7 @@ public static class TaskExt
     /// <param name="source">The task to await.</param>
     public static async Task WithAggregateException(this Task source)
     {
+        ArgumentNullException.ThrowIfNull(source);
         try { await source.ConfigureAwait(false); }
         catch when (source.IsCanceled) { throw; }
         catch { source.Wait(); }
@@ -64,6 +65,7 @@ public static class TaskExt
     /// <param name="source">The task to await.</param>
     public static async Task<T> WithAggregateException<T>(this Task<T> source)
     {
+        ArgumentNullException.ThrowIfNull(source);
         try { return await source.ConfigureAwait(false); }
         catch when (source.IsCanceled) { throw; }
         catch { return source.Result; }
@@ -104,9 +106,11 @@ public static class TaskExt
         {
             timeoutCancellationTokenSource.Cancel();
             await task;
-            return;
         }
-        throw new TimeoutException();
+        else
+        {
+            throw new TimeoutException();
+        }
     }
 
     /// <summary>
@@ -123,8 +127,11 @@ public static class TaskExt
         ArgumentNullException.ThrowIfNull(task);
         _ = task.ContinueWith(t =>
         {
-            if (t.Exception is { } ex) onException?.Invoke(ex);
-        }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
+            if (t.Exception is { } ex)
+                onException?.Invoke(ex);
+            else if (t.IsCanceled)
+                onException?.Invoke(new OperationCanceledException());
+        }, CancellationToken.None, TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.Default);
     }
 
     /// <summary>

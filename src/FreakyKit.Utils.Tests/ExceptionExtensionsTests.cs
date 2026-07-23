@@ -73,4 +73,25 @@ public class ExceptionExtensionsTests
 
         Assert.Equal("root | leaf", root.GetAllMessages(" | "));
     }
+
+    [Fact]
+    public void TraceException_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.TraceException());
+    }
+
+    [Fact]
+    public void GetRootCause_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.GetRootCause());
+    }
+
+    [Fact]
+    public void GetAllMessages_Null_ThrowsArgumentNullException()
+    {
+        Exception? ex = null;
+        Assert.Throws<ArgumentNullException>(() => ex!.GetAllMessages());
+    }
 }

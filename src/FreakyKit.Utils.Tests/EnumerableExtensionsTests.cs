@@ -294,6 +294,20 @@ public class EnumerableExtensionsTests
     }
 
     [Fact]
+    public void None_NullSource_Throws()
+    {
+        IEnumerable<int>? source = null;
+        Assert.Throws<ArgumentNullException>(() => source!.None(x => x > 0));
+    }
+
+    [Fact]
+    public void None_NullPredicate_Throws()
+    {
+        IEnumerable<int> source = [1, 2, 3];
+        Assert.Throws<ArgumentNullException>(() => source.None(null!));
+    }
+
+    [Fact]
     public void Partition_SplitsCorrectly()
     {
         IEnumerable<int> source = [1, 2, 3, 4, 5];

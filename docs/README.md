@@ -198,9 +198,9 @@ var shuffled = items.Shuffle();
 | `WhereNotNull<T>()` | `IEnumerable<T>` | Two overloads (class / struct) — drops `null` / `Nullable<T>` nulls from the sequence. |
 | `JoinString<T>(string separator)` | `string` | Sugar for `string.Join(separator, source)`. |
 | `IndexOf<T>(Func<T, bool> predicate)` | `int` | First matching index, or `-1`. |
-| `None<T>(Func<T, bool> predicate)` | `bool` | Inverse of `Any(predicate)`. |
+| `None<T>(Func<T, bool> predicate)` | `bool` | Inverse of `Any(predicate)`. Throws `ArgumentNullException` if source or predicate is null. |
 | `Partition<T>(Func<T, bool> predicate)` | `(IReadOnlyList<T> matched, IReadOnlyList<T> unmatched)` | Splits the source by predicate. |
-| `TakeRandom<T>(int count)` | `IEnumerable<T>` | Uniform random sample (capped to source size). |
+| `TakeRandom<T>(int count)` | `IEnumerable<T>` | Uniform random sample via reservoir sampling (O(n) time, O(count) space). Capped to source size. |
 
 ---
 
@@ -293,7 +293,7 @@ if (((double)temp).IsBetween(-10.0, 35.0)) { /* ... */ }
 | `IsEven<T>()` / `IsOdd<T>()` where `T : IBinaryInteger<T>` | `bool` | Parity check for any integer type. |
 | `Clamp<T>(T min, T max)` where `T : INumber<T>` | `T` | Instance form of `T.Clamp(min, max)`. |
 | `RoundTo(int decimals)` | `double` / `decimal` | Wraps `Math.Round` / `decimal.Round`. Two overloads. |
-| `Map<T>(T fromMin, T fromMax, T toMin, T toMax)` where `T : INumber<T>` | `T` | Linear remap between two numeric ranges. |
+| `Map<T>(T fromMin, T fromMax, T toMin, T toMax)` where `T : INumber<T>` | `T` | Linear remap between two numeric ranges. For integral types, overflow throws `OverflowException`. |
 
 ---
 
@@ -386,7 +386,7 @@ string? base64 = buffered.GetBase64();
 | Method | Returns | Description |
 | --- | --- | --- |
 | `GetMemoryStream()` | `MemoryStream` | Copies the source stream into a new `MemoryStream` and rewinds it to position 0. |
-| `GetBase64()` | `string?` | Returns the stream contents as a Base64-encoded string. Fast-path for `MemoryStream` (uses `ToArray` directly). Returns `null` for a null receiver. |
+| `GetBase64()` | `string?` | Returns the stream contents (from current Position to end) as a Base64-encoded string. Fast-path for `MemoryStream`. Returns `null` for a null receiver. |
 | `ToByteArray()` | `byte[]` | Fully reads the stream into a new byte array. Fast-path for `MemoryStream`. |
 | `ReadAllBytesAsync(CancellationToken token = default)` | `Task<byte[]>` | Async variant of `ToByteArray`. |
 
@@ -732,8 +732,8 @@ bool ok = "InTransit".TryToEnum<Status>(out var v);
 | --- | --- | --- |
 | `GetDescription()` | `string` | Value of `[Description]` attribute or the member name. |
 | `IsDefined()` | `bool` | Whether the value is a declared member of its enum type. |
-| `ToEnum<TEnum>(this string value)` | `TEnum` | Case-insensitive parse; throws on invalid input. |
-| `TryToEnum<TEnum>(this string value, out TEnum result)` | `bool` | TryParse variant. |
+| `ToEnum<TEnum>(this string value)` | `TEnum` | Case-insensitive parse; rejects undefined numeric values; throws on invalid input. |
+| `TryToEnum<TEnum>(this string value, out TEnum result)` | `bool` | TryParse variant; rejects undefined numeric values. |
 
 ---
 

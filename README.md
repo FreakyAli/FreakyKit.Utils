@@ -4,10 +4,10 @@
 
 **A lightweight, dependency-free collection of C# extension methods for .NET**
 
-<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/v/FreakyKit.Utils?color=blue&logo=nuget&style=for-the-badge"></a>
-<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/dt/FreakyKit.Utils?style=for-the-badge"></a>
-<a href="./LICENSE"><img src="https://img.shields.io/github/license/freakyali/FreakyKit.Utils?style=for-the-badge"></a>
-<a href="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils"><img src="https://img.shields.io/codefactor/grade/github/freakyali/FreakyKit.Utils?style=for-the-badge"></a>
+<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/v/FreakyKit.Utils?color=blue&logo=nuget&style=for-the-badge" alt="FreakyKit.Utils NuGet version"></a>
+<a href="https://www.nuget.org/packages/FreakyKit.Utils"><img src="https://img.shields.io/nuget/dt/FreakyKit.Utils?style=for-the-badge" alt="FreakyKit.Utils download count"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/github/license/freakyali/FreakyKit.Utils?style=for-the-badge" alt="FreakyKit.Utils license"></a>
+<a href="https://www.codefactor.io/repository/github/freakyali/FreakyKit.Utils"><img src="https://img.shields.io/codefactor/grade/github/freakyali/FreakyKit.Utils?style=for-the-badge" alt="FreakyKit.Utils Codefactor grade"></a>
 
 <br/>
 
@@ -49,13 +49,13 @@
 
 ## Installation
 
-```
+```bash
 dotnet add package FreakyKit.Utils
 ```
 
 Or via Package Manager Console:
 
-```
+```powershell
 Install-Package FreakyKit.Utils -Version xx.xx.xx
 ```
 

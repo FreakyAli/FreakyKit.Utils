@@ -69,4 +69,19 @@ public class EnumExtensionsTests
         Assert.False(((string)null!).TryToEnum<Status>(out _));
         Assert.False("".TryToEnum<Status>(out _));
     }
+
+    [Fact]
+    public void ToEnum_UndefinedNumericValue_Throws()
+    {
+        // Status enum has members 0, 1, 2; numeric string "99" is undefined
+        Assert.Throws<ArgumentException>(() => "99".ToEnum<Status>());
+    }
+
+    [Fact]
+    public void TryToEnum_UndefinedNumericValue_False()
+    {
+        // Numeric string that doesn't map to a defined enum member
+        Assert.False("99".TryToEnum<Status>(out var result));
+        Assert.Equal(default, result);
+    }
 }

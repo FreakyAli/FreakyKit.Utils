@@ -17,7 +17,8 @@ public static class TimeSpanExtensions
     /// <summary>
     /// Returns a compact human-readable representation of <paramref name="span"/>, picking the two most
     /// significant non-zero units. Examples: <c>"1h 30m"</c>, <c>"45s"</c>, <c>"2d 5h"</c>, <c>"0s"</c>.
-    /// Negative spans are prefixed with <c>"-"</c>.
+    /// Negative spans are prefixed with <c>"-"</c>. Special case: <see cref="TimeSpan.MinValue"/> is
+    /// handled without overflow.
     /// </summary>
     /// <param name="span">Duration to format.</param>
     public static string ToHumanString(this TimeSpan span)
@@ -25,7 +26,7 @@ public static class TimeSpanExtensions
         if (span == TimeSpan.Zero) return "0s";
 
         var sign = span < TimeSpan.Zero ? "-" : "";
-        var abs = span.Duration();
+        var abs = span == TimeSpan.MinValue ? TimeSpan.MaxValue : span.Duration();
 
         var parts = new List<string>(2);
         if (abs.Days > 0) parts.Add($"{abs.Days}d");

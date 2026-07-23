@@ -123,4 +123,12 @@ public class NumberExtensionsTests
     {
         Assert.Throws<ArgumentException>(() => 5.0.Map(1.0, 1.0, 0.0, 10.0));
     }
+
+    [Fact]
+    public void Map_IntegralOverflow_Throws()
+    {
+        // Map large int that causes arithmetic overflow
+        Assert.Throws<OverflowException>(() =>
+            int.MaxValue.Map(0, 1, 0, int.MaxValue));
+    }
 }

@@ -88,6 +88,20 @@ public class StreamExtensionsTests
     }
 
     [Fact]
+    public void GetBase64_MemoryStream_RespectsPosition()
+    {
+        byte[] data = [1, 2, 3, 4, 5];
+        using var stream = new MemoryStream(data);
+        stream.Position = 2; // Start from byte 3
+
+        var result = stream.GetBase64();
+
+        // Should encode only [3, 4, 5], not the entire buffer
+        var expected = Convert.ToBase64String([3, 4, 5]);
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
     public void ToByteArray_MemoryStream_ReturnsContents()
     {
         var data = new byte[] { 1, 2, 3, 4, 5 };

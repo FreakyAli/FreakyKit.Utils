@@ -230,7 +230,7 @@ public class DateTimeExtensionsTests
     public void IsToday_ReturnsTrueForToday()
     {
         Assert.True(DateTime.Today.IsToday());
-        Assert.True(DateTime.Now.IsToday());
+        Assert.True(DateTime.Today.AddHours(12).IsToday());
     }
 
     [Fact]

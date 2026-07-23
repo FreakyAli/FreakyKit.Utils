@@ -9,6 +9,7 @@ public static class ExceptionExtensions
     /// <param name="exception">The exception whose chain should be traced.</param>
     public static void TraceException(this Exception exception)
     {
+        ArgumentNullException.ThrowIfNull(exception);
         var stringBuilder = new StringBuilder();
         Exception? current = exception;
         while (current is not null)

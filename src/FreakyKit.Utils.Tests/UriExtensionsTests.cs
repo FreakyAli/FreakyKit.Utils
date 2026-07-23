@@ -72,6 +72,18 @@ public class UriExtensionsTests
     }
 
     [Fact]
+    public void WithoutQuery_PreservesFragment()
+    {
+        var uri = new Uri("https://example.com/path?a=1&b=2#section");
+
+        var result = uri.WithoutQuery();
+
+        Assert.Equal(string.Empty, result.Query);
+        Assert.Equal("/path", result.AbsolutePath);
+        Assert.Equal("#section", result.Fragment);
+    }
+
+    [Fact]
     public void EnsureTrailingSlash_AddsWhenMissing()
     {
         var uri = new Uri("https://example.com/api");

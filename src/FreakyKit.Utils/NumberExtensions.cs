@@ -60,6 +60,7 @@ public static class NumberExtensions
     /// Linearly remaps <paramref name="value"/> from the source range
     /// [<paramref name="fromMin"/>, <paramref name="fromMax"/>] to the target range
     /// [<paramref name="toMin"/>, <paramref name="toMax"/>].
+    /// For integral types, arithmetic overflow throws <see cref="OverflowException"/>.
     /// </summary>
     /// <typeparam name="T">Any numeric type implementing <see cref="INumber{TSelf}"/>.</typeparam>
     /// <param name="value">Value in the source range.</param>
@@ -67,9 +68,13 @@ public static class NumberExtensions
     /// <param name="fromMax">Upper bound of the source range.</param>
     /// <param name="toMin">Lower bound of the target range.</param>
     /// <param name="toMax">Upper bound of the target range.</param>
+    /// <exception cref="OverflowException">Thrown when arithmetic overflows for integral types.</exception>
     public static T Map<T>(this T value, T fromMin, T fromMax, T toMin, T toMax) where T : INumber<T>
     {
         if (fromMin == fromMax) throw new ArgumentException("Source range has zero width.");
-        return toMin + ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin));
+        checked
+        {
+            return toMin + ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin));
+        }
     }
 }

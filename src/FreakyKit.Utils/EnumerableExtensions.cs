@@ -220,9 +220,15 @@ public static class EnumerableExtensions
     /// Inverse of <see cref="Enumerable.Any{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>.
     /// </summary>
     /// <typeparam name="T">Element type.</typeparam>
-    /// <param name="source">Source sequence.</param>
-    /// <param name="predicate">Predicate used to test elements.</param>
-    public static bool None<T>(this IEnumerable<T> source, Func<T, bool> predicate) => !source.Any(predicate);
+    /// <param name="source">Source sequence; must not be <c>null</c>.</param>
+    /// <param name="predicate">Predicate used to test elements; must not be <c>null</c>.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="predicate"/> is <c>null</c>.</exception>
+    public static bool None<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(predicate);
+        return !source.Any(predicate);
+    }
 
     /// <summary>
     /// Splits <paramref name="source"/> into the elements that satisfy <paramref name="predicate"/> and those that don't.
@@ -247,17 +253,39 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns up to <paramref name="count"/> elements chosen uniformly at random from <paramref name="source"/>,
-    /// using a Fisher–Yates partial shuffle. If <paramref name="count"/> is larger than the source size,
-    /// every element is returned (in random order).
+    /// using reservoir sampling (O(n) time, O(count) space). If <paramref name="count"/> is larger than the
+    /// source size, every element is returned (in random order).
     /// </summary>
     /// <typeparam name="T">Element type.</typeparam>
-    /// <param name="source">Source sequence.</param>
+    /// <param name="source">Source sequence; must not be <c>null</c>.</param>
     /// <param name="count">Number of elements to sample (must be non-negative).</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is negative.</exception>
     public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> source, int count)
     {
         ArgumentNullException.ThrowIfNull(source);
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
         if (count == 0) return [];
-        return source.Shuffle().Take(count);
+
+        var reservoir = new List<T>(count);
+        var rng = Random.Shared;
+        int index = 0;
+
+        foreach (var item in source)
+        {
+            if (index < count)
+            {
+                reservoir.Add(item);
+            }
+            else
+            {
+                int randomIndex = rng.Next(index + 1);
+                if (randomIndex < count)
+                    reservoir[randomIndex] = item;
+            }
+            index++;
+        }
+
+        return reservoir;
     }
 }
