@@ -112,8 +112,6 @@ Full API docs for every extension class live in the [`docs/`](./docs/) folder.
 
 <div align="center">
 
-[![GitHub Stars](https://img.shields.io/github/stars/FreakyAli/FreakyKit.Utils?style=for-the-badge&logo=github)](https://github.com/FreakyAli/FreakyKit.Utils/stargazers)
-
 ![Repobeats repository analytics](https://repobeats.axiom.co/api/embed/c1f79493ade6fb1939b12493d25aa4c5f5362005.svg "Repobeats analytics image")
 
 </div>
